@@ -238,9 +238,9 @@ const styles = StyleSheet.create({
         padding: 10,
         width: '100%',
         height: 200,
-        // color: '#ff0000',
+        // backgroundColor: 'pink',
 
-        justifyContent: 'flex-start',
+        justifyContent: 'center',
         flex: 0.5,
     },
     container3: {

@@ -6,6 +6,7 @@ import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { Marker } from 'react-native-maps';
 import { SelectList } from 'react-native-dropdown-select-list';
 import { Dropdown } from 'react-native-element-dropdown';
+import RNPickerSelect from 'react-native-picker-select';
 
 const imagePath = '../assets/blogo4.png';
 const imageSource = require(imagePath);
@@ -55,8 +56,7 @@ function WhereIsBike() {
 
             if (docsSnap.docs.length > 0) {
                 docsSnap.forEach(doc => {
-                    if (doc.id ===
-                        'rzriCqKDweZfrK7C9bYyhIoJKoH3') {
+                    if (doc.id === user.uid) {
                         deviceArr.push(doc.data());
                     }
                 });
@@ -89,19 +89,20 @@ function WhereIsBike() {
 
 
     };
+    const [selectedDevice, setSelectedDevice] = useState(null);
+    const deviceList = ["Device 1", "Device 2", "Device 3"]; // Example device list
 
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
+    useEffect(() => {
+        const fetchDeviceList = async () => {
+            const devices = await readingDatabase();
+            setDeviceList(devices);
+        };
 
-    const renderLabel = () => {
-        if (value || isFocus) {
-            return (
-                <Text style={[styles.label, isFocus && { color: 'blue' }]}>
-                    Dropdown label
-                </Text>
-            );
-        }
-        return null;
+        fetchDeviceList();
+    }, []);
+
+    const handleDeviceChange = (device) => {
+        setSelectedDevice(device);
     };
 
 
@@ -120,29 +121,22 @@ function WhereIsBike() {
         fetchUpdatedDevice();
     }, []);
 
+    // const deviceList = ["Device 1", "Device 2", "Device 3"]; // Example device list
+
 
     return (
         <View style={styles.container}>
             <View style={styles.topBar}>
-                <Dropdown
-                    style={[styles.dropdown]}
-                    placeholderStyle={styles.placeholderStyle}
-                    selectedTextStyle={styles.selectedTextStyle}
-                    inputSearchStyle={styles.inputSearchStyle}
-                    iconStyle={styles.iconStyle}
-                    data={["12345", "New1"]}
-                    maxHeight={300}
-                    labelField="label"
-                    valueField="value"
-                    placeholder={'Select device'}
-
-                    value={value}
-
-                    onChange={item => {
-                        setSelectedBike(item.value);
-
-                    }}
+                <RNPickerSelect
+                    onValueChange={handleDeviceChange}
+                    items={deviceList.map((device) => ({
+                        label: device,
+                        value: device,
+                    }))}
+                    placeholder={{ label: 'Select a device', value: null }}
+                    value={selectedDevice}
                 />
+
                 <Text>THIS IS TOP BAR</Text>
 
             </View>
