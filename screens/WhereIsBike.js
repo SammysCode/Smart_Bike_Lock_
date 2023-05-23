@@ -127,7 +127,7 @@ function WhereIsBike() {
     return (
         <View style={styles.container}>
             <View style={styles.topBar}>
-                <RNPickerSelect
+                {/* <RNPickerSelect
                     onValueChange={handleDeviceChange}
                     items={deviceList.map((device) => ({
                         label: device,
@@ -135,7 +135,7 @@ function WhereIsBike() {
                     }))}
                     placeholder={{ label: 'Select a device', value: null }}
                     value={selectedDevice}
-                />
+                /> */}
 
                 <Text>THIS IS TOP BAR</Text>
 
@@ -143,7 +143,7 @@ function WhereIsBike() {
             <View style={styles.maps}>
                 <View style={styles.containerMap}>
 
-                    {/* <MapView
+                    <MapView
                         provider={PROVIDER_GOOGLE}
                         style={styles.map}
                         region={{
@@ -152,23 +152,23 @@ function WhereIsBike() {
                             latitudeDelta: 0.010,
                             longitudeDelta: 0.010,
                         }}
-                    > </MapView> */}
+                    >
 
-                    {/* <Marker
-                    coordinate={{
-                        latitude: 55.863426086619675,
-                        longitude: 9.837198617457977,
-                    }}
-                /> */}
+                        {/* <Marker
+                            coordinate={{
+                                latitude: 55.863426086619675,
+                                longitude: 9.837198617457977,
+                            }}
+                        /> */}
 
-                    {/* <Marker
+                        <Marker
                             coordinate={{
                                 latitude: 55.863426086619675,
                                 longitude: 9.837198617457977,
                             }} image={imageSource}
-                        /> */}
+                        />
 
-
+                    </MapView>
                 </View>
             </View>
         </View >
