@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, Text, ScrollView, TextInput, TouchableOpacity, Switch, Modal } from 'react-native';
 import { app } from '../firebaseConfig';
 import { getApps, getApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import * as SecureStore from 'expo-secure-store';
 
@@ -98,10 +98,23 @@ function Registration({ navigation }) {
                             lockState: true,
                             userCreated: Date.now(),
                         });
-                        // If the "Remenber me" is toggeled the user credentials are saved on the device securely
-                        if (rememberMe) {
-                            saveUserCredentials(email, psswrd);
-                        }
+
+                        signInWithEmailAndPassword(auth, email, psswrd)
+                            .then((userCredential) => {
+                                const user = userCredential.user;
+                                console.log("Logged in with:", user.email);
+                                if (rememberMe) {
+                                    saveUserCredentials(email, psswrd);
+                                }
+                            })
+                            .catch((error) => {
+                                handleIncorrectCredentials();
+                                console.log('Error logging in:', error);
+                            });
+                        // // If the "Remenber me" is toggeled the user credentials are saved on the device securely
+                        // if (rememberMe) {
+                        //     saveUserCredentials(email, psswrd);
+                        // }
                         // shows a nnotification that the account has been set up
                         handleAccountSetUp();
 

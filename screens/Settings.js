@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Animated, Text, ScrollView, TextInput, Button, TouchableOpacity, Modal } from 'react-native';
+import { app } from '../firebaseConfig';
+import { getApps, getApp } from "firebase/app";
 import { getAuth, updatePassword } from 'firebase/auth'
 import { getFirestore, set, getDocs, ref, collection, updateDoc, doc } from 'firebase/firestore';
 
@@ -133,18 +135,20 @@ function UppdatingSettings({ navigation }) {
 
                 const auth = getAuth();
                 const user = auth.currentUser;
+                console.log("user", user)
                 updatePassword(user, psswrd).then(() => {
-                    // Profile updated
-                    handleUpdatedPWord();
-                    // Updates the database with a timestamp when the user details have been updated
-                    updateDoc(doc(firestore, 'userdata', user.uid), {
-                        userUpdated: Date.now()
-                    });
+
+
                 }).catch((error) => {
                     alert('An error accured when trying to update the password. Please try again.')
                     console.log(error)
                 });
-
+                // Profile updated
+                handleUpdatedPWord();
+                // Updates the database with a timestamp when the user details have been updated
+                updateDoc(doc(firestore, 'userdata', user.uid), {
+                    userUpdated: Date.now()
+                });
             } else {
                 handleIncorrectPWord();
             }
