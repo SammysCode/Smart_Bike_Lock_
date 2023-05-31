@@ -12,13 +12,7 @@ const imageSource = require(imagePath);
 
 const StartWithLogo = ({ navigation }) => {
 
-
-    useEffect(() => {
-        const waitingToLoad = async () => {
-
-            await Promise((resolve) => setTimeout(resolve, 2000));
-        }
-    });
+    // Starting screen when application loads up
 
     return (
 

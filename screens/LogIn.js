@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Animated, Text, ScrollView, TextInput, Button, TouchableOpacity, } from 'react-native';
+import { app } from '../firebaseConfig';
+import { getApps, getApp } from "firebase/app";
+import { View, StyleSheet, Animated, Text, ScrollView, TextInput, Button, TouchableOpacity, Modal } from 'react-native';
 import { getAuth, signInWithEmailAndPassword, setPersistence, browserSessionPersistence, localPersistence } from 'firebase/auth'
 import { Switch } from 'react-native-gesture-handler';
 import * as SecureStore from 'expo-secure-store';
@@ -10,88 +12,78 @@ function LogInHandler() {
     const [email, setEmail] = useState('');
     const [psswrd, setPsswrd] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modal1Visible, setModal1Visible] = useState(false);
+    const [modal2Visible, setModal2Visible] = useState(false);
 
+    // Gets current user 
     const auth = getAuth()
+
+    // Handels when email and password don't match to account
+    const handleIncorrectCredentials = () => {
+        setModalVisible(true);
+    };
+    // Not all fields are filled in
+    const handleEmptyFields = () => {
+        setModal1Visible(true);
+    };
+    // Forgot password "button" pressed
+    const handleForgotPWord = () => {
+        setModal2Visible(true);
+    };
+    // Handels closing all modals
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        setModal1Visible(false);
+        setModal2Visible(false);
+
+    };
+    // Handles if "Remind Me" is toggeld
     const handleRememberMeToggle = () => {
         setRememberMe(!rememberMe)
 
 
     }
-
+    // Handels logging in
     const logingIn = () => {
-        console.log("Logging in...")
-
-        // signInWithEmailAndPassword(auth, email, psswrd).then((userCredentials) => {
-        //     const user = userCredentials.user;
-        //     console.log("Logged in with:", user.email);
-        // }).catch((error) => {
-        //     console.log('This error is from creating user', error)
-        // })
-        signInWithEmailAndPassword(auth, email, psswrd)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                console.log("Logged in with:", user.email);
-                if (rememberMe) {
-                    saveUserCredentials(email, psswrd);
+        // If email and password are filled in
+        if (email || psswrd) {
+            // Firebase Authenticate handels sign in, retrieves usercredentials and 
+            // if "Remind me" is set it saves the user credentials with SecureStore
+            signInWithEmailAndPassword(auth, email, psswrd)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    console.log("Logged in with:", user.email);
+                    if (rememberMe) {
+                        saveUserCredentials(email, psswrd);
+                    }
+                })
+                .catch((error) => {
+                    handleIncorrectCredentials();
+                    console.log('Error logging in:', error);
+                });
+            // User credentials are saved localy on device for automatic log in when application restarts
+            const saveUserCredentials = async (email, psswrd) => {
+                try {
+                    await SecureStore.setItemAsync('email', email);
+                    await SecureStore.setItemAsync('password', psswrd);
+                } catch (error) {
+                    console.log('Error saving user credentials:', error);
                 }
-            })
-            .catch((error) => {
-                console.log('Error logging in:', error);
-            });
 
-        const saveUserCredentials = async (email, psswrd) => {
-            try {
-                await SecureStore.setItemAsync('email', email);
-                await SecureStore.setItemAsync('password', psswrd);
-                console.log('User credentials saved.');
-            } catch (error) {
-                console.log('Error saving user credentials:', error);
-            }
-        };
+            };
+        } else {
+            // if the user has not filled in email and password
+            handleEmptyFields();
+        }
 
-        // console.log('You have now been signed it as:', user)
-        // if (rememberMe) {
-        //     setPersistence(auth, localPersistence)
-        //         .then(() => {
-        //             console.log("Logged in with:", user.email, 'in memory', userCredentials.user);
-        //             return signInWithEmailAndPassword(auth, email, psswrd);
-        //         })
-        //         .catch((error) => {
-        //             const errorCode = error.code;
-        //             const errorMessage = error.message;
-        //         });
-        // } else {
-        //     setPersistence(auth, browserSessionPersistence)
-        //         .then(() => {
-        //             console.log("Logged in with:", user.email, 'in memory', userCredentials.user);
-        //             return signInWithEmailAndPassword(auth, email, psswrd);
-        //         })
-        //         .catch((error) => {
-        //             // Handle Errors here.
-        //             const errorCode = error.code;
-        //             const errorMessage = error.message;
-        //         });
-        // }
-    }
-
-    const forgotPword = () => {
-
-        alert('Please contact customer support for further assistance at: \n smartbikelock@email.com ')
-
-    }
-
+    };
 
 
     return (
         <View style={styles.container}>
-
             <ScrollView contentContainerStyle={{ flexGrow: 1 }} automaticallyAdjustKeyboardInsets>
-
-                {/* <View style={styles.container}> */}
-                {/* <View style={styles.circle} /> */}
                 <View style={styles.container1}>
-
-
                     <View style={styles.circle} />
                 </View>
                 <View style={styles.container2}>
@@ -104,6 +96,7 @@ function LogInHandler() {
                             style={styles.input}
                             placeholder="youremail@email.com"
                             keyboardType="email-address"
+                            autoCapitalize="none"
                             value={email}
                             onChangeText={setEmail}
 
@@ -117,22 +110,46 @@ function LogInHandler() {
                             secureTextEntry={true}
                             onChangeText={setPsswrd}
                         />
-                        <TouchableOpacity style={styles.button} onPress={forgotPword} >
-                            <Text style={styles.inputLable}>Forgot Password</Text>
-                        </TouchableOpacity>
+                        <View style={{ alignContent: 'flex-end', alignItems: 'flex-end', paddingRight: 20 }}>
+                            <TouchableOpacity style={styles.button} onPress={handleForgotPWord} >
+                                <Text style={styles.inputLable}>Forgot Password</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                    <View style={{ alignItems: "flex-start", gap: 10, marginTop: 10, padding: 10 }}>
+                    <View style={styles.rememberMeView}>
                         <Text style={styles.inputLable}>Remember Me:</Text>
                         <Switch value={rememberMe} onValueChange={handleRememberMeToggle} trackColor={{ false: '#ADB5BD', true: '#000000' }} thumbColor={rememberMe ? '#ffffff' : '#000000'} />
+                        <View style={styles.btnView}>
+                            <TouchableOpacity style={styles.loginBtn} onPress={logingIn}>
+                                <Text style={styles.btnText}>Log in</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-
-                    <View style={styles.btnView}>
-                        <TouchableOpacity style={styles.loginBtn} onPress={logingIn}>
-                            <Text style={styles.btnText}>Log in</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <Modal visible={modalVisible} animationType="slide" transparent>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Incorrect email or password</Text>
+                            <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
+                    <Modal visible={modal1Visible} animationType="slide" transparent>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Please fill in both email and password</Text>
+                            <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
+                    <Modal visible={modal2Visible} animationType="slide" transparent>
+                        <View style={styles.modalContainer}>
+                            <Text style={styles.modalText}>Please contact customer support for further assistance at: smartbikelock@email.com </Text>
+                            <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
+                                <Text style={styles.closeButtonText}>Close</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </Modal>
                 </View>
-                {/* </View> */}
             </ScrollView>
         </View>
     );
@@ -148,39 +165,28 @@ const styles = StyleSheet.create({
     container1: {
         marginTop: '20%',
         padding: 10,
-        // width: '100%',
-        // height: 200,
-        // color: '#ff0000',
         justifyContent: 'space-around',
         flex: 1,
-        // ' backgroundColor: 'blue','
-        // display: 'flex',
     },
     container2: {
 
         marginTop: 10,
-        marginLeft: 20,
+        marginLeft: 10,
         padding: 10,
+        marginBottom: 10,
         width: '100%',
         height: 200,
-        // color: '#ff0000',
-
-        justifyContent: 'flex-start',
-        flex: 0.5,
-        // backgroundColor: 'orange',
-        // flexGrow: 2,
+        justifyContent: 'space-around',
+        flex: 1,
     },
     container3: {
-        // marginTop: 10,
         padding: 10,
         width: '100%',
         height: '100%',
-        // color: '#ff0000',
         alignContent: 'flex-start',
         justifyContent: 'space-around',
         flex: 2,
         gap: 10,
-        // backgroundColor: 'red',
     },
     circle: {
         position: 'absolute',
@@ -200,34 +206,32 @@ const styles = StyleSheet.create({
     inputView: {
         padding: 10,
         gap: -10,
-        // backgroundColor: 'blue',
-        alignContent: 'flex-start'
-
+        alignContent: 'flex-start',
     },
     inputLable: {
         paddingTop: 20,
         right: -10,
-        fontWeight: 'bold'
-
+        fontWeight: 'bold',
     },
     input: {
-
-        // width: '90%',
         height: 38,
         borderWidth: 2,
         borderColor: '#000000',
         backgroundColor: '#ffffff',
         margin: 10,
         padding: 8,
-        // color: 'white',
         borderRadius: 6,
         fontSize: 16,
         fontWeight: '100',
-        // fontStyle: 'italic'
+    },
+    rememberMeView: {
+        alignItems: "flex-start",
+        gap: -10,
+        padding: 10,
     },
     loginBtn: {
-        width: '50%',
-        height: '35%',
+        width: 300,
+        height: 51,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#000000',
@@ -238,15 +242,40 @@ const styles = StyleSheet.create({
     btnText: {
         fontSize: 16,
         fontWeight: '900',
-        color: '#ffffff'
-
+        color: '#ffffff',
     },
     btnView: {
-        // margin: 20,
+        margin: 10,
+        alignContent: 'center',
         alignItems: 'center',
-        // // justifyContent: 'center',
-        // backgroundColor: 'green'
-
+        justifyContent: 'center',
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalText: {
+        backgroundColor: '#ffffff',
+        padding: 50,
+        borderRadius: 8,
+        fontSize: 16,
+        alignItems: 'center',
+    },
+    closeButton: {
+        marginTop: 10,
+        width: 100,
+        height: 51,
+        backgroundColor: '#000000',
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    closeButtonText: {
+        color: '#ffffff',
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });
 

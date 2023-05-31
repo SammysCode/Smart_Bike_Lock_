@@ -1,29 +1,20 @@
 import React from "react";
-import { View, StyleSheet, Animated, Text, ScrollView, TextInput, Button, TouchableOpacity, Image } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 const imagePath = '../assets/logo.png';
 const imageSource = require(imagePath);
 const LoginOrReg = ({ navigation }) => {
-
+    // Displays log in and registration button and navigates to said screen
     return (
         <View>
-
             <View style={styles.container}>
-
-
-
                 <View style={styles.container1}>
                     <View style={styles.circle} />
                     <View style={styles.container2}>
                         <View style={styles.titleView}>
                             <Image source={imageSource} />
-                            {/* <Text style={styles.titelText}>SMART BIKE LOCK</Text> */}
                         </View>
                     </View>
-
                 </View>
-                {/* <View style={styles.container2}>
-                    <Text>This is text</Text>
-                </View> */}
                 <View style={styles.container3}>
                     <View style={styles.buttonView}>
                         <TouchableOpacity style={styles.logAndSinUpBtnL} onPress={() => navigation.navigate('login')}>
@@ -33,19 +24,11 @@ const LoginOrReg = ({ navigation }) => {
                             navigation.navigate('registration')}>
                             <Text style={styles.buttonTextR}>REGISTER</Text>
                         </TouchableOpacity>
-
-                        {/* <Button color='black' title="Log In"
-                        />
-                        <Button color='black' width='80%' height='10%' title="Sing Up!"
-                        /> */}
                     </View>
                 </View>
             </View>
         </View>
-
     );
-
-
 
 };
 
@@ -62,22 +45,15 @@ const styles = StyleSheet.create({
         padding: 10,
         justifyContent: 'space-around',
         display: 'flex',
-        // backgroundColor: "blue"
-
     },
     container2: {
         flex: 1,
-        // backgroundColor: "red",
-
-
     },
     container3: {
         flex: 1,
         alignItems: 'flex-start',
         alignContent: 'flex-start',
         justifyContent: 'center',
-        // backgroundColor: "purple"
-
     },
     circle: {
         position: 'absolute',
@@ -92,8 +68,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        // bottom: '-10%',
-
 
     },
     titelText: {
@@ -108,7 +82,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-start',
         justifyContent: 'center',
-        // backgroundColor: 'white',
         padding: 20,
         gap: 10,
 
@@ -142,8 +115,7 @@ const styles = StyleSheet.create({
     buttonTextL: {
         fontSize: 13,
         fontWeight: '900',
-        color: '#000000'
-
+        color: '#000000',
     },
 
 

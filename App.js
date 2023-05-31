@@ -17,24 +17,31 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as SecureStore from "expo-secure-store";
 
-
+// Creates stacks for navigation + navigation bar
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Gets user credentials from device
 const getSavedUserCredentials = async () => {
   try {
     const email = await SecureStore.getItemAsync('email');
     const password = await SecureStore.getItemAsync('password');
-    return { email, password };
+    // If there is credentrials saved it will return something 
+    if (email !== null && password !== null) {
+      return { email, password };
+      // if no credentials it will return null 
+    } else {
+      return null;
+    }
   } catch (error) {
     console.log('Error retrieving user credentials:', error);
     return null;
   }
 };
-
+// If the user is signed in it will see different screens
 const SignedInUser = () => {
   return (
-
+    // This is the bottom navigatorbar 
     <Tab.Navigator
       initialRouteName={'LockAndUnlock'}
       screenOptions={({ route }) => ({
@@ -63,10 +70,10 @@ const SignedInUser = () => {
 
     // 
     >
-      <Tab.Screen name="Pair Device" component={PairDevice} options={{ headerShown: false }} />
+      {/* and the screens it will navigate to */}
       <Tab.Screen name="Lock & Unlock" component={LockAndUnlockHandler} options={{ headerShown: false }} />
       <Tab.Screen name="Map" component={WhereIsBike} options={{ headerShown: false }} />
-
+      <Tab.Screen name="Pair Device" component={PairDevice} options={{ headerShown: false }} />
       <Tab.Screen name="Settings" component={UppdatingSettings} options={{ headerShown: false }} />
     </Tab.Navigator>
   );
@@ -78,9 +85,13 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // Gets current user (null= no user)
     const auth = getAuth();
+    // Automatically checks if there are credentials on the device 
     const checkSavedCredentials = async () => {
       const savedCredentials = await getSavedUserCredentials();
+      // If there are credentials saved on the device they will be automatically signed in with saved credentials 
+      // and  navigated to the lock and unlock screen
       if (savedCredentials) {
         navigateToNextScreen();
         const { email, password } = savedCredentials;
@@ -88,43 +99,35 @@ export default function App() {
           .then((userCredential) => {
             const user = userCredential.user;
             console.log("Logged in with saved credentials:", user.email);
-            // Navigate to the next screen after 2 seconds
           })
-        // .catch((error) => {
-
-        //   console.log('Error logging in with saved credentials:', error);
-        //   setIsLoading(false); // Failed to log in, stop loading
-        // });
+        // If no credentrials are found 
       } else {
-        setUser(null); // No saved credentials found, set the user to null
-        setIsLoading(false); // No need to wait, stop loading
+        setUser(null);
+        navigateToNextScreen();
       }
     };
 
     checkSavedCredentials();
 
-
-
+    // Changes the state of the user 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
     });
 
-    // console.log(au)
-
     return () => unsubscribe();
   }, []);
-
+  // The start screen loads for 5 seconds and thenchanges the state of isLoading to false to continue to next screen
   const navigateToNextScreen = () => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 3000);
+    }, 5000);
   };
-
+  // For the start screen to load
   if (isLoading) {
     return <StartWithLogo />;
   }
 
-
+  // Shows the correct screens if the user is signed in or not
   return (
     <NavigationContainer>
       {user ? (
@@ -138,37 +141,21 @@ export default function App() {
         </Stack.Navigator>
       )}
 
-      {/* <UppdatingSettings>
-
-      </UppdatingSettings> */}
     </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  regTitleBox: {
-    flex: 1,
-    backgroundColor: '#FF4433',
-    justifyContent: 'flex-start'
-  }
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     backgroundColor: '#fff',
+//     alignItems: 'center',
+//     // justifyContent: 'center',
+//   },
+//   regTitleBox: {
+//     flex: 1,
+//     backgroundColor: '#FF4433',
+//     justifyContent: 'flex-start'
+//   }
 
-});
-
-
-{/* <View style={styles.container}>
-        <Testing />
-        <View style={styles.regTitleBox}>
-          <Text style={color = '#252525'}>Is this working?</Text>
-          <Text style={color = '#252525'}>Is this working?</Text>
-          <Text style={color = '#252525'}>Is this working?</Text>
-          <Text style={color = '#252525'}>Is this working?</Text>
-
-        </View>
-        <StatusBar style="auto" />
-      </View> */}
+// });
