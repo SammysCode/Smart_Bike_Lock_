@@ -98,11 +98,13 @@ function Registration({ navigation }) {
                             lockState: true,
                             userCreated: Date.now(),
                         });
-
+                        // The user is signed in automatically after creating an account
+                        // This sign in is added because of an error I was recieving
                         signInWithEmailAndPassword(auth, email, psswrd)
                             .then((userCredential) => {
                                 const user = userCredential.user;
                                 console.log("Logged in with:", user.email);
+                                // If the "Remenber me" is toggeled the user credentials are saved on the device securely
                                 if (rememberMe) {
                                     saveUserCredentials(email, psswrd);
                                 }
@@ -111,10 +113,7 @@ function Registration({ navigation }) {
                                 handleIncorrectCredentials();
                                 console.log('Error logging in:', error);
                             });
-                        // // If the "Remenber me" is toggeled the user credentials are saved on the device securely
-                        // if (rememberMe) {
-                        //     saveUserCredentials(email, psswrd);
-                        // }
+
                         // shows a nnotification that the account has been set up
                         handleAccountSetUp();
 
