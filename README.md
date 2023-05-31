@@ -6,4 +6,15 @@ The user registers an account and can choose to stay logged in for the session o
 The app replicates findind connectable registered devices and the user has the possibility to add more devices. 
 The user is also able to uppdate password when logged in.
 
-Map feature is WIP. 
+Screens done: 
+startWithLogo.js
+LoginOrRegister.js
+LogIn.js
+Registration.js
+LockAndUnlock.js
+WhereIsBike.js
+PairDevice.js
+Settings.js
+
+Main file:
+App.js
