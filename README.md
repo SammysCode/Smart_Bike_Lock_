@@ -7,18 +7,9 @@ The app replicates findind connectable registered devices and the user has the p
 The user is also able to uppdate password when logged in.
 
 
-Screens done: 
-startWithLogo.js
-LoginOrRegister.js
-LogIn.js
-Registration.js
-LockAndUnlock.js
-WhereIsBike.js
-PariDevice.js
-Settings.js
+Screens done: startWithLogo.js, LoginOrRegister.js, LogIn.js, Registration.js, LockAndUnlock.js, WhereIsBike.js, PariDevice.js and Settings.js
 
-Main screen:
-App.js
+Main screen: App.js
 
 Firebase configurations is not uploaded
 
