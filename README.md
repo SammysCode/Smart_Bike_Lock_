@@ -6,7 +6,8 @@ The user registers an account and can choose to stay logged in for the session o
 The app replicates findind connectable registered devices and the user has the possibility to add more devices. 
 The user is also able to uppdate password when logged in.
 
-Screens made:
+
+Screens done: 
 startWithLogo.js
 LoginOrRegister.js
 LogIn.js
@@ -20,3 +21,4 @@ Main screen:
 App.js
 
 Firebase configurations is not uploaded
+
